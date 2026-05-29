@@ -429,6 +429,13 @@ namespace Infrastructure.Persistence
 
                 entity.Property(d => d.FechaFin)
                     .HasColumnType("datetime");
+
+                entity.Property(d => d.TipoDescuento)
+                    .HasMaxLength(20).IsRequired();
+                    
+                entity.Property(d => d.Activo)
+                    .IsRequired();
+                    
             });
 
             // INSCRIPCION
