@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260521064005_horarioCanchaTable")]
-    partial class horarioCanchaTable
+    [Migration("20260528071202_InitialCreate3")]
+    partial class InitialCreate3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,7 +84,10 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Cupo")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdProfesor")
+                    b.Property<int>("DniProfesor")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdActividad")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Precio")
@@ -92,7 +95,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("IdClase");
 
-                    b.HasIndex("IdProfesor");
+                    b.HasIndex("DniProfesor");
 
                     b.ToTable("Clase", (string)null);
                 });
@@ -123,11 +126,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Competencia", b =>
                 {
-                    b.Property<int>("IdCompeticion")
+                    b.Property<int>("IdCompetencia")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCompeticion"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCompetencia"));
 
                     b.Property<int>("Cupos")
                         .HasColumnType("int");
@@ -145,11 +148,18 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("Precio")
                         .HasColumnType("decimal(10,2)");
 
-                    b.HasKey("IdCompeticion");
+                    b.Property<string>("TipoCompetencia")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
+                    b.HasKey("IdCompetencia");
 
                     b.ToTable("Competencia", (string)null);
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator<string>("TipoCompetencia").HasValue("Competencia");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Domain.Entities.Descuento", b =>
@@ -187,7 +197,16 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEntrenamiento"));
 
+                    b.Property<int>("Cupo")
+                        .HasColumnType("int");
+
                     b.Property<int>("DniEntrenador")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EntrenadorDni")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdActividad")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Precio")
@@ -196,6 +215,8 @@ namespace Infrastructure.Migrations
                     b.HasKey("IdEntrenamiento");
 
                     b.HasIndex("DniEntrenador");
+
+                    b.HasIndex("EntrenadorDni");
 
                     b.ToTable("Entrenamiento", (string)null);
                 });
@@ -208,14 +229,14 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEquipo"));
 
-                    b.Property<int?>("CompetenciaIdCompeticion")
-                        .HasColumnType("int");
-
                     b.Property<int>("Derrotas")
                         .HasColumnType("int");
 
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
+
+                    b.Property<int>("IdCompetencia")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -227,7 +248,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("IdEquipo");
 
-                    b.HasIndex("CompetenciaIdCompeticion");
+                    b.HasIndex("IdCompetencia");
 
                     b.ToTable("Equipo", (string)null);
                 });
@@ -242,9 +263,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("Dia")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Disponible")
-                        .HasColumnType("bit");
 
                     b.Property<TimeSpan>("HoraFin")
                         .HasColumnType("time");
@@ -294,7 +312,7 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("claseIdClase")
                         .HasColumnType("int");
 
-                    b.Property<int?>("competenciaIdCompeticion")
+                    b.Property<int?>("competenciaIdCompetencia")
                         .HasColumnType("int");
 
                     b.Property<int?>("entrenamientoIdEntrenamiento")
@@ -311,7 +329,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("claseIdClase");
 
-                    b.HasIndex("competenciaIdCompeticion");
+                    b.HasIndex("competenciaIdCompetencia");
 
                     b.HasIndex("entrenamientoIdEntrenamiento");
 
@@ -331,6 +349,20 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("EquipoIdEquipo")
                         .HasColumnType("int");
 
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("Fecha")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GolesLocal")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GolesVis")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("HoraFin")
                         .HasColumnType("datetime");
 
@@ -346,10 +378,8 @@ namespace Infrastructure.Migrations
                     b.Property<int>("IdEquipoVis")
                         .HasColumnType("int");
 
-                    b.Property<string>("Resultado")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<int?>("IdSigPartido")
+                        .HasColumnType("int");
 
                     b.HasKey("IdPartido");
 
@@ -360,6 +390,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("IdEquipoLocal");
 
                     b.HasIndex("IdEquipoVis");
+
+                    b.HasIndex("IdSigPartido");
 
                     b.ToTable("Partido", (string)null);
                 });
@@ -428,16 +460,13 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EsValida")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("FechaRes")
-                        .HasColumnType("datetime");
-
-                    b.Property<DateTime>("HorarioFin")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("HorarioInicio")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
 
                     b.Property<int>("IdCancha")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdCanchaHorario")
                         .HasColumnType("int");
 
                     b.Property<int?>("IdDescuento")
@@ -451,6 +480,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("DniCliente");
 
                     b.HasIndex("IdCancha");
+
+                    b.HasIndex("IdCanchaHorario");
 
                     b.ToTable("Reserva", (string)null);
                 });
@@ -504,8 +535,8 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("FechaNac")
-                        .HasColumnType("datetime");
+                    b.Property<DateOnly>("FechaNac")
+                        .HasColumnType("date");
 
                     b.Property<string>("Localidad")
                         .IsRequired()
@@ -538,7 +569,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasBaseType("Domain.Entities.Competencia");
 
-                    b.ToTable("Ligas");
+                    b.HasDiscriminator().HasValue("Liga");
                 });
 
             modelBuilder.Entity("Domain.Entities.Torneo", b =>
@@ -550,7 +581,7 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.ToTable("Torneo", (string)null);
+                    b.HasDiscriminator().HasValue("Torneo");
                 });
 
             modelBuilder.Entity("Domain.Entities.Administrador", b =>
@@ -614,7 +645,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entities.Profesor", "Profesor")
                         .WithMany("Clases")
-                        .HasForeignKey("IdProfesor")
+                        .HasForeignKey("DniProfesor")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -640,14 +671,22 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Entrenador", null)
+                        .WithMany("Entrenamientos")
+                        .HasForeignKey("EntrenadorDni");
+
                     b.Navigation("Entrenador");
                 });
 
             modelBuilder.Entity("Domain.Entities.Equipo", b =>
                 {
-                    b.HasOne("Domain.Entities.Competencia", null)
+                    b.HasOne("Domain.Entities.Competencia", "Competencia")
                         .WithMany("Equipos")
-                        .HasForeignKey("CompetenciaIdCompeticion");
+                        .HasForeignKey("IdCompetencia")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Competencia");
                 });
 
             modelBuilder.Entity("Domain.Entities.HorarioCancha", b =>
@@ -681,7 +720,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Domain.Entities.Competencia", "competencia")
                         .WithMany("Inscriptos")
-                        .HasForeignKey("competenciaIdCompeticion");
+                        .HasForeignKey("competenciaIdCompetencia");
 
                     b.HasOne("Domain.Entities.Entrenamiento", "entrenamiento")
                         .WithMany("Inscriptos")
@@ -713,7 +752,7 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("EquipoIdEquipo");
 
                     b.HasOne("Domain.Entities.Competencia", "Competencia")
-                        .WithMany()
+                        .WithMany("Partidos")
                         .HasForeignKey("IdCompetencia")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -730,11 +769,18 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Partido", "SigPartido")
+                        .WithMany()
+                        .HasForeignKey("IdSigPartido")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Competencia");
 
                     b.Navigation("EquipoLocal");
 
                     b.Navigation("EquipoVis");
+
+                    b.Navigation("SigPartido");
                 });
 
             modelBuilder.Entity("Domain.Entities.Recibo", b =>
@@ -770,18 +816,17 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.HorarioCancha", "HorarioCancha")
+                        .WithMany()
+                        .HasForeignKey("IdCanchaHorario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Cancha");
 
                     b.Navigation("Cliente");
-                });
 
-            modelBuilder.Entity("Domain.Entities.Torneo", b =>
-                {
-                    b.HasOne("Domain.Entities.Competencia", null)
-                        .WithOne()
-                        .HasForeignKey("Domain.Entities.Torneo", "IdCompeticion")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("HorarioCancha");
                 });
 
             modelBuilder.Entity("Domain.Entities.Profesional", b =>
@@ -826,6 +871,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Equipos");
 
                     b.Navigation("Inscriptos");
+
+                    b.Navigation("Partidos");
                 });
 
             modelBuilder.Entity("Domain.Entities.Entrenamiento", b =>
@@ -843,6 +890,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("Inscripciones");
 
                     b.Navigation("Reservas");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Entrenador", b =>
+                {
+                    b.Navigation("Entrenamientos");
                 });
 
             modelBuilder.Entity("Domain.Entities.Profesor", b =>

@@ -48,6 +48,11 @@ namespace Infrastructure.Command
             await _context.SaveChangesAsync(ct);
             return equipo.IdEquipo;
         }
+        public async Task AgregarPartidos(List<Partido> fixture, CancellationToken ct = default)
+        {
+            await _context.Partidos.AddRangeAsync(fixture, ct);
+            await _context.SaveChangesAsync(ct);
+        }
     }
 }
 

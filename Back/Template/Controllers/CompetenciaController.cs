@@ -15,7 +15,7 @@ namespace Template.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost("CrearCompetencias")]
         public async Task<IActionResult> CrearCompetencia([FromBody] CrearCompetenciaRequest request, CancellationToken ct)
         {
             var response = await _service.CrearCompetencia(request, ct);
@@ -30,9 +30,9 @@ namespace Template.Controllers
         }
 
         [HttpPut("{CompetenciaId}")]
-        public async Task<IActionResult> ModificarCompetencia([FromBody] ModificarCompetenciaRequest request, CancellationToken ct)
+        public async Task<IActionResult> ModificarCompetencia(int CompetenciaId, [FromBody] ModificarCompetenciaRequest request, CancellationToken ct)
         {
-            await _service.ModificarCompetencia(request, ct);
+            await _service.ModificarCompetencia(CompetenciaId, request, ct);
             return NoContent();
         }
 
@@ -41,6 +41,31 @@ namespace Template.Controllers
         {
             await _service.EliminarCompetencia(CompetenciaId);
             return NoContent();
+        }
+        [HttpGet]
+        public async Task<IActionResult> ObtenerTodasLasCompetencias()
+        {
+            var result = await _service.ObtenerTodasLasCompetencias();
+
+            return Ok(result);
+        }
+        [HttpPost("AgregarEquipo")]
+        public async Task<IActionResult> AgregarEquipo([FromBody] AgregarEquipoRequest request, int idCompetencia, CancellationToken ct)
+        {
+            await _service.AgregarEquipo(request, idCompetencia, ct);
+            return NoContent();
+        }
+        /*[HttpPost("GenerarFixture")]
+        public async Task<IActionResult> GenerarFixture(int idCompetencia, CancellationToken ct)
+        {
+            await _service.GenerarFixture(idCompetencia, ct);
+            return NoContent();
+        }*/
+        [HttpGet("DevolverPartidos")]
+        public async Task<IActionResult> ObtenerPartidos(int idCompetencia, CancellationToken ct)
+        {
+            var result = await _service.ObtenerPartidos(idCompetencia, ct);
+            return Ok(result);
         }
     }
 }
